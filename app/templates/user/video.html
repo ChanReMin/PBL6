@@ -3,39 +3,64 @@
     <div class="d-flex flex-column justify-content-center me-4"> <!-- space-y-8 increases space between buttons -->
         <!-- Button Like -->
         <div class="d-flex flex-column align-items-center mb-4">
-            <button id="like-button" class="btn btn-light rounded-circle shadow-sm p-3"> <!-- w-30 h-30 increases button size -->
-                <img src="/static/svg/thumbs-up.svg" alt="Like" width="16" height="16">
+            <button id="like-button"
+                    {% if session['user'] %}
+                        onclick="video_like('{{ session['user']['id'] }}')"
+                    {% else %}
+                         data-bs-toggle="modal" data-bs-target="#login-popup"
+                    {% endif %}
+                        class="btn btn-light rounded-circle shadow-sm p-3">
+
+            {#            <button id="like-button" class="btn btn-light rounded-circle shadow-sm p-3"> <!-- w-30 h-30 increases button size -->#}
+                <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
+                    <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a10 10 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733q.086.18.138.363c.077.27.113.567.113.856s-.036.586-.113.856c-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.2 3.2 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.8 4.8 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"/>
+                </svg>
             </button>
             <span id="like-count" class="small mt-1">1</span> <!-- Initial like count -->
         </div>
 
         <!-- Button Dislike -->
         <div class="d-flex flex-column align-items-center mb-4">
-            <button id="dislike-button" class="btn btn-light rounded-circle shadow-sm p-3"> <!-- w-30 h-30 increases button size -->
-                <img src="/static/svg/thumbs-down.svg" alt="Like" width="16" height="16">
+            <button id="dislike-button"
+                    {% if session['user'] %}
+                    onclick="dislike()"
+                    {% else %}
+                    data-bs-toggle="modal" data-bs-target="#login-popup"
+                    {% endif %}
+                    class="btn btn-light rounded-circle shadow-sm p-3">
+{#            <button id="dislike-button" class="btn btn-light rounded-circle shadow-sm p-3"> <!-- w-30 h-30 increases button size -->#}
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hand-thumbs-down-fill" viewBox="0 0 16 16">
+                    <path d="M6.956 14.534c.065.936.952 1.659 1.908 1.42l.261-.065a1.38 1.38 0 0 0 1.012-.965c.22-.816.533-2.512.062-4.51q.205.03.443.051c.713.065 1.669.071 2.516-.211.518-.173.994-.68 1.2-1.272a1.9 1.9 0 0 0-.234-1.734c.058-.118.103-.242.138-.362.077-.27.113-.568.113-.856 0-.29-.036-.586-.113-.857a2 2 0 0 0-.16-.403c.169-.387.107-.82-.003-1.149a3.2 3.2 0 0 0-.488-.9c.054-.153.076-.313.076-.465a1.86 1.86 0 0 0-.253-.912C13.1.757 12.437.28 11.5.28H8c-.605 0-1.07.08-1.466.217a4.8 4.8 0 0 0-.97.485l-.048.029c-.504.308-.999.61-2.068.723C2.682 1.815 2 2.434 2 3.279v4c0 .851.685 1.433 1.357 1.616.849.232 1.574.787 2.132 1.41.56.626.914 1.28 1.039 1.638.199.575.356 1.54.428 2.591"/>
+                </svg>
             </button>
-            <span id="comment-count" class="text-sm">0</span> <!-- Initial comment count -->
+            <span id="dislike-count" class="text-sm"></span> <!-- Initial comment count -->
         </div>
         <!-- Button Comment -->
         <div class="d-flex flex-column align-items-center mb-4">
-            <button id="comment-button" class="btn btn-light rounded-circle shadow-sm p-3"> <!-- w-30 h-30 increases button size -->
-                <img src="/static/svg/comment-button.svg" alt="Like" width="16" height="16">
+            <button onclick="toggleComment()" class="btn btn-light rounded-circle shadow-sm p-3"> <!-- w-30 h-30 increases button size -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-right-text-fill" viewBox="0 0 16 16">
+                    <path d="M16 2a2 2 0 0 0-2-2H2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h9.586a1 1 0 0 1 .707.293l2.853 2.853a.5.5 0 0 0 .854-.353zM3.5 3h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1 0-1m0 2.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1"/>
+                </svg>
             </button>
-            <span id="comment-count" class="text-sm">0</span> <!-- Initial comment count -->
+            <span id="comment-count" class="text-sm"></span> <!-- Initial comment count -->
         </div>
 
         <!-- Button Share -->
         <div class="d-flex flex-column align-items-center mb-4">
             <button id="share-button" class="btn btn-light rounded-circle shadow-sm p-3"> <!-- w-30 h-30 increases button size -->
                 <!-- Share icon (SVG) -->
-                <img src="/static/svg/share.svg" alt="Like" width="16" height="16">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share-fill" viewBox="0 0 16 16">
+                    <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5"/>
+                </svg>
             </button>
         </div>
 
         <!-- Button Settings -->
         <button id="settings-button" class="btn btn-light rounded-circle shadow-sm p-3"> <!-- w-30 h-30 increases button size -->
             <!-- Settings icon (SVG) -->
-            <img src="/static/svg/settings.svg" alt="Like" width="16" height="16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-gear-fill" viewBox="0 0 16 16">
+                <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"/>
+            </svg>
         </button>
     </div>
 
@@ -44,104 +69,44 @@
          style="width: 30%; height: 80%;">
         <!-- Video Container -->
         <div class="position-relative w-100 h-100">
-            <iframe id="video-player" class="position-relative top-0 w-90 h-" src=""
+            <iframe id="video-player" class="position-relative w-100 h-100" src=""
                     title="YouTube video player" frameborder="0" allow="accelerometer; autoplay;
-                    clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <!-- Comment Section (Centered) -->
+    <div id="comment-section" class="position-relative bg-white shadow rounded overflow-hidden d-flex flex-column align-items-center mb-4"
+         style="width: 30%; height: 80%; background-color: #f8f9fa;">
+        <!-- Comment Container -->
+        <div id="comment-container" class="position-relative w-100 h-100 p-3 overflow-auto">
+            <h5>Comments</h5>
+            <ul id="comment-list" class="list-unstyled">
+                <!-- Comments sẽ được thêm tại đây từ JavaScript -->
+            </ul>
+        </div>
+
+        <!-- Input area for new comment (fixed at the bottom) -->
+        <div class="input-group" style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; background-color: #f8f9fa;">
+            <input id="comment-input" type="text" class="form-control" placeholder="Nhập bình luận..." aria-label="Nhập bình luận">
+            <button id="send-comment" class="btn btn-primary" type="button">Gửi</button>
         </div>
     </div>
 
     <!-- Buttons for navigating videos (outside the video, on the right) -->
     <div class="d-flex flex-column ms-4" style="gap: 2rem;">
         <button id="prev-button" class="btn btn-light rounded-circle shadow-sm p-3">
-            <img src="/static/svg/arrow-up.svg" alt="Like" width="16" height="16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
+            </svg>
         </button>
         <button id="next-button" class="btn btn-light rounded-circle shadow-sm p-3">
-            <img src="/static/svg/arrow-down.svg" alt="Like" width="16" height="16">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1"/>
+            </svg>
         </button>
     </div>
 </div>
-<script>
-    let videos = []; // To store the list of videos
-    let currentIndex = 0; // To keep track of the current video index
 
-    // Function to load a video by index
-    function loadVideo(index) {
-        if (index >= 0 && index < videos.length) {
-            const video = videos[index];
-            const videoPlayer = document.getElementById('video-player');
-            videoPlayer.src = video.video_url;
-        }
-    }
+<script src="/static/js/user/video.js"></script>
 
-    // Fetch the list of videos from the API
-    function fetchVideos() {
-        fetch('/api/video/get')
-            .then(response => response.json())
-            .then(data => {
-                videos = data;
-                if (videos.length > 0) {
-                    loadVideo(0); // Load the first video initially
-                }
-            })
-            .catch(error => console.error('Error fetching videos:', error));
-    }
-
-    // Event listeners for navigation buttons
-    document.getElementById('prev-button').addEventListener('click', function () {
-        if (currentIndex > 0) {
-            currentIndex -= 1;
-            loadVideo(currentIndex);
-        }
-    });
-
-    document.getElementById('next-button').addEventListener('click', function () {
-        if (currentIndex < videos.length - 1) {
-            currentIndex += 1;
-            loadVideo(currentIndex);
-        }
-    });
-
-    // Event listener for mouse wheel scroll
-    window.addEventListener('wheel', function (event) {
-        if (event.deltaY < 0) {
-            // Scroll up
-            if (currentIndex > 0) {
-                currentIndex -= 1;
-                loadVideo(currentIndex);
-            }
-        } else if (event.deltaY > 0) {
-            // Scroll down
-            if (currentIndex < videos.length - 1) {
-                currentIndex += 1;
-                loadVideo(currentIndex);
-            }
-        }
-    });
-
-    // Like button functionality
-    let likeCount = 1;
-    document.getElementById('like-button').addEventListener('click', function () {
-        likeCount += 1;
-        document.getElementById('like-count').innerText = likeCount;
-    });
-
-    // Placeholder functionality for other buttons
-    document.getElementById('comment-button').addEventListener('click', function () {
-        alert('Comment functionality not implemented yet');
-    });
-
-    document.getElementById('dislike-button').addEventListener('click', function () {
-        alert('Dislike functionality not implemented yet');
-    });
-
-    document.getElementById('share-button').addEventListener('click', function () {
-        alert('Share functionality not implemented yet');
-    });
-
-    document.getElementById('settings-button').addEventListener('click', function () {
-        alert('Settings functionality not implemented yet');
-    });
-
-    // Initial call to fetch and load videos
-    fetchVideos();
-</script>
