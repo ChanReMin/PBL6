@@ -147,13 +147,12 @@ function uploadVideo() {
     // })
     axios.post(`/api/user/video/record`, formData)
         .then(response => {
-            if (!response.ok) {
-                return response.text().then(errorText => {
-                    console.error('Error:', response.status, errorText);
-                    throw new Error('Network response was not ok: ' + response.status + ' - ' + errorText);
-                });
+            // Check for both 200 (OK) and 201 (Created) as successful responses
+            if (response.status !== 200 && response.status !== 201) {
+                console.error('Error:', response.status, response.statusText);
+                throw new Error('Network response was not ok: ' + response.status + ' - ' + response.statusText);
             }
-            return response.json();
+            return response.data; // Access response data directly in Axios
         })
         .then(data => {
             alert('Video uploaded and processed successfully: ' + data.url);
@@ -162,6 +161,7 @@ function uploadVideo() {
             console.error('Error during video upload:', error);
             alert('An error occurred while uploading the video: ' + error.message);
         });
+
 }
 
 function searchMusic() {

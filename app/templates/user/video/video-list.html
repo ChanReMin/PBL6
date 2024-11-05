@@ -1,5 +1,7 @@
 {% extends "user/layout.html" %}
 {% block user_content %}
+    <link rel="stylesheet" href="/static/css/video-list.css">
+    <link href="https://vjs.zencdn.net/7.11.4/video-js.css" rel="stylesheet" />
     <h1>Danh sách video</h1>
     <button class="btn btn-success" type="button" onclick="window.location.href='{{ url_for('user.video.add') }}';">
         Thêm
@@ -7,10 +9,19 @@
     <div class="card-container">
         {% for video in videos %}
             <div class="card">
-                <img src="" alt="Video Thumbnail">
-                <div class="card-body">
-                    <h2 class="card-title">{{ video.title }}</h2>
-                    <p class="card-description">{{ video.description }}</p>
+                <div class="video-container" >
+                    <video
+                            id="video{{ video.id }}"
+                            class="video-js"
+                            controls
+                            preload="auto"
+                            muted
+                            data-setup="{}"
+{#                            Style =“object-fit: contain;“#}
+                    >
+                            <source src="{{ video.video_url }}" type="video/mp4" />
+                    </video>
+                    <h2 class="card-title">{{ video.title | safe }}</h2>
                 </div>
                 <div class="card-footer">
                     Posted by: <strong>{{ video.user.fetch().username }}</strong>
@@ -18,4 +29,9 @@
             </div>
         {% endfor %}
     </div>
+    <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
+    <!-- Load the YouTube IFrame API script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <!-- Load your custom JavaScript file -->
+    <script src="/static/js/user/video/video-list.js"></script>
 {% endblock %}
