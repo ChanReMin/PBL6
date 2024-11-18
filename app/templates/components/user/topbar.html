@@ -31,13 +31,13 @@
                 <button id="dropdownButton" class="btn btn-link d-flex align-items-center text-decoration-none"
                         type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <span class="me-2">{{ session['user']['name'] }}</span>
-                    <img src="{{ user.avatar_url }}" alt="User Avatar"
+                    <img src="{{ url_for('static', filename='image/1.jpg') }}" alt="User Avatar"
                          class="rounded-circle" width="32" height="32">
                 </button>
                 <ul id="dropdownMenu" class="dropdown-menu dropdown-menu-end d-block d-none">
-                    <li><a class="dropdown-item" href="{{ url_for('user.profile.get_profile',user_id=session['user']['id'])|string }}">Xem hồ sơ</a></li>
-                    <li><a class="dropdown-item" href="#">Cài đặt</a></li>
-                    <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Đăng xuất</a></li>
+                    <li><a class="dropdown-item" href="#">Profile</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
                 </ul>
             </div>
         {% else %}

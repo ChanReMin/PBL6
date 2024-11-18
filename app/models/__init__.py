@@ -3,8 +3,8 @@ from .embedded_document.comment import Comment
 from .embedded_document.lyric import Lyric
 from .embedded_document.score import Score
 
-from .base.extended_account import ExtendedAccount
 from .video import Video
+from .base.extended_account import ExtendedAccount
 
 from .admin import Admin
 from .artist import Artist

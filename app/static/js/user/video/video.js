@@ -1,8 +1,20 @@
 let videos = []; // To store the list of videos
 let currentIndex = 0; // To keep track of the current video index
-let api_video = '/api/user/video';
-let api_video_comment = `${api_video}/comment`;
 
+// // Function to load a video by index
+// function loadVideo(index) {
+//     if (index >= 0 && index < videos.length) {
+//         const video = videos[index];
+//         const videoPlayer = document.getElementById('video-player');
+//         videoPlayer.src = video.video_url;
+//
+//         // Cập nhật số lượt thích và bình luận
+//         document.getElementById('like-count').innerText = video.like_count;
+//         document.getElementById('comment-count').innerText = video.comments.length;
+//         // Hiển thị bình luận
+//         renderComments(video);
+//     }
+// }
 function loadVideo(index) {
     if (index >= 0 && index < videos.length) {
         const video = videos[index];
@@ -33,7 +45,7 @@ function loadVideo(index) {
 
 // Fetch the list of videos from the API using Axios
 function fetchVideos() {
-    axios.get(`${api_video}/get`)
+    axios.get('/api/video/get')
         .then(response => {
             videos = response.data;
             if (videos.length > 0) {
@@ -102,7 +114,7 @@ function video_like(userId) {
 
     if (liked) {
         // Người dùng muốn bỏ thích
-        axios.post(`${api_video}/unlike`, {videoId: videoId, userId: userId})
+        axios.post('/api/video/unlike', {videoId: videoId, userId: userId})
             .then(response => {
                 if (response.data.success) {
                     // Giảm số lượt thích
@@ -121,7 +133,7 @@ function video_like(userId) {
             .catch(error => console.error('Error unliking the video:', error));
     } else {
         // Người dùng muốn thích
-        axios.post(`${api_video}/like`, {videoId: videoId, userId: userId})
+        axios.post('/api/video/like', {videoId: videoId, userId: userId})
             .then(response => {
                 if (response.data.success) {
                     // Tăng số lượt thích
@@ -386,6 +398,70 @@ function renderComments(video) {
     });
 }
 
+
+document.getElementById('send-comment').addEventListener('click', function () {
+    if (!sessionUser) {
+        alert('Vui lòng đăng nhập để bình luận.');
+        return;
+    }
+
+    const videoId = videos[currentIndex].id;
+    const commentContent = document.getElementById('comment-input').value.trim();
+
+    if (commentContent) {
+        axios.post(`/api/video/comment`, { videoID: videoId, comment: commentContent })
+            .then(response => {
+                console.log('Response from server:', response.data);
+
+                // Cập nhật video data và render lại các comment
+                videos[currentIndex].comments.push({
+                    id: response.data.comment_id,
+                    user: { name: sessionUser.name },
+                    content: commentContent,
+                    like_count: 0,
+                    dislike_count: 0
+                });
+
+                renderComments(videos[currentIndex]);
+
+                // Xóa nội dung trong ô nhập sau khi thêm bình luận
+                document.getElementById('comment-input').value = '';
+            })
+            .catch(error => {
+                console.error('Error commenting on the video:', error);
+                alert('Đã xảy ra lỗi khi gửi bình luận.');
+            });
+    } else {
+        alert('Vui lòng nhập nội dung bình luận.');
+    }
+});
+
+function likeComment(commentId) {
+    axios.post('/api/comment/like', { commentId: commentId })
+        .then(response => {
+            if (response.data.success) {
+                // Tìm và cập nhật số lượt like
+                const likeButton = document.querySelector(`[onclick="likeComment('${commentId}')"]`);
+                let likeCount = parseInt(likeButton.textContent.trim());
+                likeButton.innerHTML = `<i class="bi bi-hand-thumbs-up-fill"></i> ${likeCount + 1}`;
+            }
+        })
+        .catch(error => console.error('Error liking the comment:', error));
+}
+
+function dislikeComment(commentId) {
+    axios.post('/api/comment/dislike', { commentId: commentId })
+        .then(response => {
+            if (response.data.success) {
+                // Tìm và cập nhật số lượt dislike
+                const dislikeButton = document.querySelector(`[onclick="dislikeComment('${commentId}')"]`);
+                let dislikeCount = parseInt(dislikeButton.textContent.trim());
+                dislikeButton.innerHTML = `<i class="bi bi-hand-thumbs-down-fill"></i> ${dislikeCount + 1}`;
+            }
+        })
+        .catch(error => console.error('Error disliking the comment:', error));
+}
+
 function toggleReplySection(commentId) {
     const replySection = document.getElementById(`reply-section-${commentId}`);
     replySection.classList.toggle('d-none');
@@ -398,7 +474,7 @@ function submitReply(commentId) {
 
     if (replyContent) {
         console.log("Sending reply content:", replyContent); // kiểm tra nội dung phản hồi
-        axios.post(`${api_video}/comment/reply`, { commentId: commentId, content: replyContent })
+        axios.post('/api/video/comment/reply', { commentId: commentId, content: replyContent })
             .then(response => {
                 console.log("Reply response from server:", response.data); // kiểm tra phản hồi từ server
                 if (response.data.success) {
@@ -431,72 +507,3 @@ function submitReply(commentId) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* Section comment */
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
- Like comment
- */
-function likeComment(commentId) {
-    axios.post('/api/user/video/comment/like', {commentId: commentId})
-        .then(response => {
-            if (response.data.success) {
-                // Tìm và cập nhật số lượt like
-                const likeButton = document.querySelector(`[onclick="likeComment('${commentId}')"]`);
-                let likeCount = parseInt(likeButton.textContent.trim());
-                likeButton.innerHTML = `<i class="bi bi-hand-thumbs-up-fill"></i> ${likeCount + 1}`;
-            }
-        })
-        .catch(error => console.error('Error liking the comment:', error));
-}
-
-function dislikeComment(commentId) {
-    axios.post('/api/user/video/comment/dislike', {commentId: commentId})
-        .then(response => {
-            if (response.data.success) {
-                // Tìm và cập nhật số lượt dislike
-                const dislikeButton = document.querySelector(`[onclick="dislikeComment('${commentId}')"]`);
-                let dislikeCount = parseInt(dislikeButton.textContent.trim());
-                dislikeButton.innerHTML = `<i class="bi bi-hand-thumbs-down-fill"></i> ${dislikeCount + 1}`;
-            }
-        })
-        .catch(error => console.error('Error disliking the comment:', error));
-}
-
-document.getElementById('send-comment').addEventListener('click', function () {
-    if (!sessionUser) {
-        alert('Vui lòng đăng nhập để bình luận.');
-        return;
-    }
-
-    const videoId = videos[currentIndex].id;
-    const commentContent = document.getElementById('comment-input').value.trim();
-    const userId = sessionUser.id;
-
-    if (commentContent) {
-        axios.post(`${api_video_comment}/insert`, {videoId: videoId, content: commentContent, userId: userId})
-            .then(response => {
-                console.log('Response from server:', response.data);
-
-                // Cập nhật video data và render lại các comment
-                videos[currentIndex].comments.push({
-                    id: response.data.comment_id,
-                    user: {name: sessionUser.name},
-                    content: commentContent,
-                    like_count: 0,
-                    dislike_count: 0
-                });
-
-                renderComments(videos[currentIndex]);
-
-                // Xóa nội dung trong ô nhập sau khi thêm bình luận
-                document.getElementById('comment-input').value = '';
-            })
-            .catch(error => {
-                console.error('Error commenting on the video:', error);
-                alert('Đã xảy ra lỗi khi gửi bình luận.');
-            });
-    } else {
-        alert('Vui lòng nhập nội dung bình luận.');
-    }
-});

@@ -1,16 +1,11 @@
 import tempfile
-
+from flask import Blueprint, jsonify, request, session
 import cloudinary
 import cloudinary.uploader
-from flask import Blueprint, jsonify, request, session
-
-from app.models.music import Music
 from app.models.video import Video
-from .comment import api_user_video_comment_bp
+from app.models.music import Music
 
 api_user_video_bp = Blueprint('api_user_video', __name__)
-api_user_video_bp.register_blueprint(api_user_video_comment_bp, url_prefix='/comment')
-
 ALLOWED_EXTENSIONS = {'mp4', 'avi', 'mov', 'webm'}
 
 def allowed_file(filename):
@@ -141,31 +136,3 @@ def search_music():
     except Exception as e:
         # Catch any other error that occurs and return a 500 response
         return jsonify({'error': str(e)}), 500
-
-@api_user_video_bp.route('/get', methods=['GET'])
-def get_video():
-    videos = [video.jsonify() for video in Video.get_random_videos(5)]
-    return jsonify(videos), 200
-
-
-@api_user_video_bp.route('/like', methods=['POST'])
-def like_video():
-    data = request.get_json()
-    video_id = data['videoId']
-    user_id = data['userId']
-
-    video_like_count = Video.objects.like_video(video_id=video_id, user_id=user_id)
-    if video_like_count == -1:
-        return jsonify({'success': False})
-    return jsonify({'success': True, 'like_count': video_like_count})
-
-@api_user_video_bp.route('/unlike', methods=['POST'])
-def unlike_video():
-    data = request.get_json()
-    video_id = data['videoId']
-    user_id = data['userId']
-
-    video_like_count = Video.objects.unlike_video(video_id=video_id, user_id=user_id)
-    if video_like_count == -1:
-        return jsonify({'success': False})
-    return jsonify({'success': True, 'like_count': video_like_count})

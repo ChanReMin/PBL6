@@ -11,7 +11,7 @@ class Video(Document):
     score = EmbeddedDocumentField('Score')
     video_url = URLField()
     like_count = IntField(default=0)
-    title = StringField()
+    title = StringField(required=True)
     comments = ListField(EmbeddedDocumentField('Comment'))
 
     created_at = DateTimeField(default=datetime.now())
