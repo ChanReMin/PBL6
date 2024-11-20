@@ -17,12 +17,12 @@ MAX_MUSIC_PER_PAGE = 10
 def add():
     form = AddMusicForm()
 
-    if form.validate_on_submit():
+    if form:
         name = form.name.data
-        lyric = form.lyric.data
-        uri = form.uri.data
+        lyric = form.lyrics.data
+        uri = form.music_url.data
 
-        new_music = Music(name=name, lyric=lyric, uri=uri)
+        new_music = Music(name=name, lyrics=lyric, music_url=uri)
         new_music.save()
 
         flash('Music added successfully!', 'success')

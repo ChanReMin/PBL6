@@ -4,7 +4,7 @@ from wtforms.validators import DataRequired, URL
 from app.models import artist, genre
 
 class LyricForm(Form):
-    content = StringField('Lyric Content')
+    text = StringField('Lyric Content')
     start_time = StringField('Start Time')
     end_time = StringField('End Time')
 
