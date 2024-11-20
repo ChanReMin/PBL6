@@ -1,7 +1,7 @@
-<!-- Edit profile -->
+{#Edit profile#}
 <link rel="stylesheet" href="/static/css/user-edit-profile.css">
-<div class="modal fade" id="edit-popup" tabindex="-1" aria-labelledby="editPopupLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="user-edit-popup" tabindex="-1" aria-labelledby="editPopupLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 15px;">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editPopupLabel">Chỉnh sửa hồ sơ</h5>
@@ -9,51 +9,49 @@
             </div>
 
             <div class="modal-body">
-                    <div class="d-flex justify-content-center">
-                        <form id="update-user-profile" onsubmit="updateProfile(event)" class="profile-edit-form">
-                            <input type="hidden" id="update-user-id" name="id" value="{{ user.id|string }}">
-                            <div class="avatar-container">
-                                <div class="avatar-wrapper">
-                                    <img src="{{ user.avatar_url }}" alt="User Avatar" id="user-avatar">
-                                </div>
-                                <label for="update-user-avatar" class="upload-icon">
-                                    <input type="file" id="update-user-avatar" accept="image/*" style="display: none;">
-                                    <i class="fa fa-pencil"></i>
-                                </label>
+                <div class="d-flex justify-content-center">
+                    <form id="update-user-profile" onsubmit="updateProfile(event)" class="profile-edit-form">
+                        <input type="hidden" id="update-user-id" name="id" value="{{ user.id|string }}">
+                        <div class="avatar-container">
+                            <div class="avatar-wrapper">
+                                <img src="{{ user.avatar_url|replace('/upload/', '/upload/w_150,h_150,c_fill/') if user.avatar_url else url_for('static', filename='image/default_avatar.svg') }}" alt="User Avatar" id="user-avatar">
                             </div>
-                            <div class="content-container mb-3 d-flex align-items-center">
-                                <label for="update-user-name" class="form-label">Tên</label>
-                                <input type="text" class="form-control flex-grow-1" id="update-user-name" name="name" value="{{ user.name }}">
-                            </div>
-                            <div class="content-container mb-3 d-flex align-items-center">
-                                <label for="update-user-username" class="form-label">Tên người dùng</label>
-                                <input type="text" class="form-control flex-grow-1" id="update-user-username" name="username" value="{{ user.username }}">
-                            </div>
-                            <div class="content-container mb-3 d-flex align-items-center">
-                                <label for="update-user-bio" class="form-label">Tiểu sử</label>
-                                {% if user.bio %}
+                            <label for="update-user-avatar" class="upload-icon">
+                                <input type="file" id="update-user-avatar" accept="image/*" style="display: none;">
+                                <i class="fa fa-pencil"></i>
+                            </label>
+                        </div>
+                        <div class="content-container mb-3 d-flex align-items-center">
+                            <label for="update-user-name" class="form-label">Tên</label>
+                            <input type="text" class="form-control flex-grow-1" id="update-user-name" name="name" value="{{ user.name }}">
+                        </div>
+                        <div class="content-container mb-3 d-flex align-items-center">
+                            <label for="update-user-username" class="form-label">Tên người dùng</label>
+                            <input type="text" class="form-control flex-grow-1" id="update-user-username" name="username" value="{{ user.username }}">
+                        </div>
+                        <div class="content-container mb-3 d-flex align-items-center">
+                            <label for="update-user-bio" class="form-label">Tiểu sử</label>
+                            {% if user.bio %}
                                 <textarea class="form-control flex-grow-1" id="update-user-bio" name="bio" rows="3" maxlength="255" placeholder="Tiểu sử">{{ user.bio }}</textarea>
-                                {% else %}
+                            {% else %}
                                 <textarea class="form-control flex-grow-1" id="update-user-bio" name="bio" rows="3" maxlength="255" placeholder="Tiểu sử"></textarea>
-                                {% endif %}
-                            </div>
-                            <div class="content-container mb-3 d-flex align-items-center">
-                                <label for="update-user-email" class="form-label">Email</label>
-                                <input type="email" class="form-control flex-grow-1" id="update-user-email" name="email" value="{{ user.email }}">
-                            </div>
-                            <div class="mb-3 d-flex align-items-center">
-                                <label for="update-user-dob" class="form-label">Ngày sinh</label>
-                                <input type="date" class="form-control flex-grow-1" id="update-user-dob" name="dob" value="{{ user.dob }}">
-                            </div>
-                            <div class="form-footer">
-                                <button type="submit" class="btn btn-success text-white">Cập nhật</button>
-                            </div>
-                        </form>
-                    </div>
+                            {% endif %}
+                        </div>
+                        <div class="content-container mb-3 d-flex align-items-center">
+                            <label for="update-user-email" class="form-label">Email</label>
+                            <input type="email" class="form-control flex-grow-1" id="update-user-email" name="email" value="{{ user.email }}">
+                        </div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <label for="update-user-dob" class="form-label">Ngày sinh</label>
+                            <input type="date" class="form-control flex-grow-1" id="update-user-dob" name="dob" value="{{ user.dob }}">
+                        </div>
+                        <div class="form-footer">
+                            <button type="submit" class="btn btn-success text-white">Cập nhật</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 <script src="/static/js/user/profile/update.js"></script>
-<script src="/static/dist/js/jquery.min.js"></script>
-

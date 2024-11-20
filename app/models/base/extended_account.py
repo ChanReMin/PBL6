@@ -2,6 +2,7 @@ from mongoengine import DateField, EmailField, EmbeddedDocumentField, FloatField
 
 from ..base.account import Account
 from ..query_set.extended_account_query_set import ExtendedAccountQuerySet
+import json
 
 
 class ExtendedAccount(Account):
@@ -31,3 +32,6 @@ class ExtendedAccount(Account):
             "following_count": self.following_count,
             "date_of_birth": self.date_of_birth.strftime('%Y-%m-%d') if self.date_of_birth else None,
         }
+
+    def to_dict(self):
+        return json.dumps(self.jsonify(), default=str)

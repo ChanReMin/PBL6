@@ -1,0 +1,70 @@
+.card {
+    width: 210px;
+    height: 250px;
+    background: rgb(189, 116, 116);
+    border-radius: 12px;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.123);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    transition-duration: .5s;
+    position: relative;
+}
+
+.profileImage
+{
+    background: linear-gradient(to right,rgb(54, 54, 54),rgb(32, 32, 32));
+    margin-top: 20px;
+    width: 170px;
+    height: 170px;
+    border-radius: 50%;
+    box-shadow: 5px 10px 20px rgba(0, 0, 0, 0.329);
+    position:absolute;
+    top: 10px;
+}
+.textContainer {
+    position:absolute;
+    top: 170px;
+    width: 100%;
+    text-align: left;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.name {
+    font-size: 2em;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.profile {
+    font-size: 0.84em;
+    color: rgb(194, 194, 194);
+    letter-spacing: 0.2px;
+}
+
+.card:hover {
+    background-color: rgb(68, 11, 11);
+    transition-duration: .5s;
+}
+
+.row {
+    margin-bottom: 20px; /* Adjust this value to increase/decrease vertical spacing */
+}
+.col {
+    padding: 0 20px; /* Adjust these values to increase/decrease horizontal spacing */
+    margin-bottom: 50px; /* Adds space below each card */
+}
+
+.img{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+

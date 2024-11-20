@@ -2,6 +2,8 @@ from datetime import datetime
 
 from mongoengine import DateTimeField, Document, LazyReferenceField
 
+from app.models.query_set.follow_query_set import FollowQuerySet
+
 
 class Follow(Document):
     follower = LazyReferenceField('ExtendedAccount', required=True)
@@ -11,6 +13,7 @@ class Follow(Document):
 
     meta = {
         'collection': 'follows',
+        'queryset_class': FollowQuerySet,
         'indexes': [
             {'fields': ('follower', 'following'), 'unique': True}
         ],

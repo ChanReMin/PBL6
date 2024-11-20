@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="/static/css/follow-modal.css">
+<div class="modal fade" id="user-follow-popup" tabindex="-1" aria-labelledby="followPopupLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-container">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom: none;">
+                    <h5 class="modal-title" id="followPopupLabel">{{ user.username }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="tab-link-container">
+                        <div id="follower-tab" class="tab-link-item">Follower</div>
+                        <div id="following-tab" class="tab-link-item">Following</div>
+                    </div>
+                    <!-- Tabs content -->
+                    <div class="tab-content" id="followTabContent">
+                        <div class="tab-pane" id="followerTabContent" role="tabpanel" aria-labelledby="followers-tab">
+                        </div>
+                        <div class="tab-pane" id="followingTabContent" role="tabpanel" aria-labelledby="following-tab">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/user/profile/follow.js"></script>

@@ -1,14 +1,18 @@
 from datetime import datetime
+import os
 
+from dotenv import load_dotenv
 from flask_bcrypt import check_password_hash, generate_password_hash
 from mongoengine import BinaryField, BooleanField, DateTimeField, Document, StringField, URLField
+load_dotenv()
 
+# print(os.getenv('DEFAULT_AVATAR_URL'))
 
 class Account(Document):
     username = StringField(required=True, unique=True, max_length=50)
     name = StringField(required=True)
     password = BinaryField()
-    avatar_url = URLField()
+    avatar_url = URLField(default=os.getenv('DEFAULT_AVATAR_URL'))
     gender = BooleanField()
 
     created_at = DateTimeField(default=datetime.now())

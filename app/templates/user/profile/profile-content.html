@@ -1,0 +1,9 @@
+{% block user_profile_content %}
+    {% if flag == 'follower' %}
+        {% include 'user/profile/content/follower_list.html' %}
+    {% elif flag == 'following' %}
+        {% include 'user/profile/content/following_list.html' %}
+    {% elif flag == 'home' %}
+        {% include 'user/profile/content/video-list.html' %}
+    {% endif %}
+{% endblock %}

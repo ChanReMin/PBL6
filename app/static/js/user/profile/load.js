@@ -1,4 +1,18 @@
+var shared_data = {
+    following_data: null,
+    follower_data: null,
+    user:null
+};
 document.addEventListener('DOMContentLoaded', function () {
+    fetchFollowData()
+        .then((data) => {
+            shared_data['follower_data'] = data.follower_data;
+            shared_data['following_data'] = data.following_data;
+            shared_data['user'] = user;
+        })
+        .catch((error) => {
+            console.error('Error fetching follow data:', error);
+        });
     const editButtons = document.querySelectorAll('.edit-btn');
     editButtons.forEach(function (button){
         button.addEventListener('click', function (event) {
@@ -10,44 +24,87 @@ document.addEventListener('DOMContentLoaded', function () {
             const userEmail = this.getAttribute('data-email');
             const userAvatar = this.getAttribute('data-avt');
             // Now populate the modal's form fields
-            const modal = document.querySelector('#edit-popup');
-            modal.querySelector('#update-user-id').value = userId;
-            modal.querySelector('#update-user-name').value = userName;
-            modal.querySelector('#update-user-username').value = userUsername;
-            modal.querySelector('#update-user-dob').value = userDateOfBirth;
-            modal.querySelector('#update-user-email').value = userEmail;
-            modal.querySelector('#update-user-avatar').value = userAvatar;
+            const editProfileModal = document.querySelector('#user-edit-popup');
+            editProfileModal.querySelector('#update-user-id').value = userId;
+            editProfileModal.querySelector('#update-user-name').value = userName;
+            editProfileModal.querySelector('#update-user-username').value = userUsername;
+            editProfileModal.querySelector('#update-user-dob').value = userDateOfBirth;
+            editProfileModal.querySelector('#update-user-email').value = userEmail;
+            editProfileModal.querySelector('#update-user-avatar').value = userAvatar;
+        });
+    })
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const underline = document.querySelector('.underline');
+
+    function moveUnderline(activeTab) {
+        underline.style.width = `${activeTab.offsetWidth}px`;
+        underline.style.left = `${activeTab.offsetLeft}px`;
+    }
+
+    tabLinks.forEach(link => {
+        if (link.href === window.location.href) {
+            link.classList.add('active');
+            underline.classList.add('active');
+            moveUnderline(link);
+        }
     });
-})});
 
-// JavaScript to move underline
-const tabLinks = document.querySelectorAll('.tab-link');
-const underline = document.querySelector('.underline');
-
-// Function to update the underline position
-function updateUnderline() {
-    const activeTab = document.querySelector('.tab-link.active');
-    const rect = activeTab.getBoundingClientRect();
-    const containerRect = document.querySelector('.custom-tab-container').getBoundingClientRect();
-
-    underline.style.width = `${rect.width}px`;
-    underline.style.left = `${rect.left - containerRect.left}px`;
-}
-
-// Add event listeners to each tab link
-tabLinks.forEach(tab => {
-    tab.addEventListener('click', function() {
-        // Remove active class from all tabs
-        tabLinks.forEach(t => t.classList.remove('active'));
-
-        // Add active class to clicked tab
-        tab.classList.add('active');
-
-        // Update underline position
-        updateUnderline();
-    });
+    function fetchFollowData() {
+        return Promise.all([
+            axios.post('/api/user/follow/follower', {
+                user_id: user.id,
+            }),
+            axios.post('/api/user/follow/following', {
+                user_id: user.id,
+            }),
+        ])
+            .then(([followerResponse, followingResponse]) => {
+                return {
+                    follower_data: followerResponse.data,
+                    following_data: followingResponse.data,
+                };
+            });
+    }
 });
-
-// Initial underline position
-window.addEventListener('load', updateUnderline);
-window.addEventListener('resize', updateUnderline);
+function createFollow(event){
+    event.preventDefault();
+    const followingId = $('#following-id').val();
+    axios.post('/api/user/follow/create', {
+        follower_id: user.id,
+        following_id: followingId,
+    })
+        .then(function (response) {
+            let button = event.target;
+            button.onclick = deleteFollow;
+            button.innerText = 'Hủy theo dõi';
+            alert('Follow success');
+        })
+        .catch(function (error) {
+            console.error('Follow Error', error);
+            alert('Follow Error');
+        });
+}
+function deleteFollow(event)
+{
+    event.preventDefault(event);
+    const followingId = $('#following-id').val();
+    axios.delete('/api/user/follow/delete', {
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: {
+            follower_id: user.id,
+            following_id: followingId,
+        }
+    })
+        .then(function (response) {
+            let button = event.target;
+            button.onclick = createFollow;
+            button.innerText = 'Theo dõi';
+            alert('Unfollow success');
+        })
+        .catch(function (error) {
+            console.error('Follow Error', error);
+            alert('Follow Error');
+        });
+}

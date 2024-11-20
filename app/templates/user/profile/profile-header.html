@@ -1,54 +1,112 @@
-{% block user_profile_header %}
+{#{% block user_profile_header %}#}
 <!-- Profile Header -->
-    <link rel="stylesheet" href="/static/css/profile-header.css">
+<link rel="stylesheet" href="/static/css/profile-header.css">
+
 {#    <div class="container mt-4 bg-white text-dark">#}
-    <div class="header-container">
-        <div class="d-flex align-items-center">
-            <!-- Profile Picture -->
-            <div class="profile-picture me-3">
-                <img src="{{ user.avatar_url }}" class="rounded-circle" alt="Profile Picture">
-            </div>
-            <!-- Profile Information -->
-            <div class="profile-info">
-                <div class="user-info-row">
-                    <h3 class="mb-0">{{ user.username }}</h3>
-                    <small class="text-muted">{{user.name}}</small>
-                </div>
-                {% if session['user']['id'] == user.id|string %}
-                <div class="mt-2">
-                        <button data-bs-toggle="modal" data-bs-target="#edit-popup"
-                                class="TUX-button" type="button"
-                                data-id="{{ user.id|string }}"
-                                data-name="{{ user.name }}"
-                                data-username="{{ user.username }}"
-                                data-email="{{ user.email }}"
-                                data-dob="{{ user.date_of_birth }}"
-                                data-avt="{{ user.avatar_url }}">
-                            Chỉnh sửa
-                        </button>
-                </div>
-                {% else %}
-                {% endif %}
-                {% if user.bio %}
-                    <div class="mt-2 text-muted">{{ user.bio }}</div>
-                {% else %}
-                    <div class="mt-2 text-muted">Chưa có tiểu sử</div>
-                {% endif %}
-            </div>
+<div class="header-container">
+    <div class="d-flex align-items-center">
+        <!-- Profile Picture -->
+        <div class="profile-picture me-3">
+            <img src="{{ user.avatar_url }}"
+                 class="rounded-circle"
+                 alt="Profile Picture"
+                 style="width: 212px; height: 212px">
         </div>
-        <div class="custom-tab-container">
-            <a href="{{ url_for('user.profile.get_profile',user_id = user.id|string) }}" class="tab-link active">
-                <i class="fas fa-home"></i> Home
-            </a>
-            <a href="{{ url_for('user.profile.get_profile',user_id = user.id|string)}}" class="tab-link">
-                <i class="fas fa-heart"></i> Yêu thích
-            </a>
-            <a href="#favorites" class="tab-link">
-                <i class="fas fa-bookmark"></i> Đã thích
-            </a>
-            <!-- Moving underline -->
-            <div class="underline"></div>
+        <!-- Profile Information -->
+        <div class="profile-info">
+            <div class="user-info-row">
+                <h3 class="mb-0">{{ user.username }}</h3>
+                <small class="text-muted">{{ user.name }}</small>
+            </div>
+
+            <div class="mt-2">
+                {% if session['user']['id'] == user.id | string %}
+                    {% include "user/profile/modals/edit-profile.html" %}
+
+                    <button data-bs-toggle="modal" data-bs-target="#user-edit-popup"
+                            class="TUX-button" type="button"
+                            data-id="{{ user.id|string }}"
+                            data-name="{{ user.name }}"
+                            data-username="{{ user.username }}"
+                            data-email="{{ user.email }}"
+                            data-dob="{{ user.date_of_birth }}"
+                            data-avt="{{ user.avatar_url }}">
+                        Chỉnh sửa
+                    </button>
+                {% else %}
+                    <input type="hidden" id="following-id" value="{{ user.id }}">
+                    {% if follow_status %}
+                        <button onclick=deleteFollow(event)
+                                class="TUX-button" type="button"
+                                data-id="{{ user.id|string }}">
+                            Hủy theo dõi
+                        </button>
+                    {% else %}
+                        <button onclick=createFollow(event)
+                                class="TUX-button" type="button"
+                                data-id="{{ user.id|string }}">
+                            Theo dõi
+                        </button>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <div class="user-follow-row">
+                <div class="user-follow-item">
+                    <strong>{{ user.followers_count }}</strong>
+                    <span data-bs-toggle="modal"
+                          data-bs-target="#user-follow-popup"
+                          data-flag="follower"
+                          onclick="toggleFollow(event)" class = "user-follow-info">Follower</span>
+                </div>
+                <div class="user-follow-item">
+                    <strong>{{ user.following_count }}</strong>
+                    <span data-bs-toggle="modal"
+                          data-bs-target="#user-follow-popup"
+                          data-flag="following"
+                          onclick="toggleFollow(event)" class = "user-follow-info">Đang Follow</span>
+                </div>
+            </div>
+            {% include "user/profile/modals/follow.html" %}
+
+            <div class="mt-2 text-muted">
+                {% if user.bio %}
+                    {{ user.bio }}
+                {% else %}
+                    Chưa có tiểu sử
+                {% endif %}
+            </div>
+
         </div>
     </div>
-    <script src="/static/js/user/profile/load.js"></script>
-{% endblock %}
+
+    <div class="custom-tab-container">
+        <a href="{{ url_for('user.profile.get_profile', user_id=user.id | string) }}" class="tab-link">
+            <i class="fas fa-home"></i> Home
+        </a>
+{#        <a href="{{ url_for('user.profile.get_following', follower_id=user.id | string) }}" class="tab-link">#}
+{#            <i class="fas fa-heart"></i> Đang theo dõi#}
+{#        </a>#}
+{#        <a href="{{ url_for('user.profile.get_follower', following_id=user.id | string) }}" class="tab-link">#}
+{#            <i class="fas fa-bookmark"></i> Người theo dõi#}
+{#        </a>#}
+        <!-- Moving underline -->
+        <div class="underline"></div>
+    </div>
+</div>
+
+
+<script>
+    let user = {{  user.to_dict() | safe }}
+    {#{% if session['user'] %}#}
+    {#    let sessionUser = {{ session['user']|tojson }};#}
+    {#    console.log(sessionUser)#}
+    {#{% else %}#}
+    {#    let sessionUser = null;#}
+    {#{% endif %}#}
+</script>
+<script src="/static/js/config.js"></script>
+<script src="/static/js/user/profile/load.js"></script>
+<script src="/static/js/user/profile/follow.js"></script>
+
+{#{% endblock %}#}
