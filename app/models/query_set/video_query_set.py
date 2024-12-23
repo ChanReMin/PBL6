@@ -11,6 +11,7 @@ class VideoQuerySet(QuerySet):
         total_videos = self.count()
         sample_size = max(1, total_videos)
         pipeline = [
+            {"$match": {"public": True}},
             {"$sample": {"size": sample_size}},
             # Bước này TẠO trường total_comments_count bằng $size
             {

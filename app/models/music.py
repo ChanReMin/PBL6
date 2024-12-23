@@ -29,7 +29,6 @@ class Music(Document):
         return self.save()
 
     def jsonify(self, *args, **kwargs):
-        print(__file__, 'music id', self.id)
         return {
             'id': str(self.id),
             'name': self.name,

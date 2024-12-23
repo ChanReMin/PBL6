@@ -38,7 +38,7 @@
             </button>
             <ul id="dropdownMenu" class="dropdown-menu dropdown-menu-end d-block d-none">
                 <li><a class="dropdown-item" href="{{ url_for('user.profile.get_profile',user_id=session['user']['id'])|string }}">Xem hồ sơ</a></li>
-                <li><a class="dropdown-item" href="#">Cài đặt</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('user.setting.settings') }}">Cài đặt</a></li>
                 <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Đăng xuất</a></li>
             </ul>
         </div>

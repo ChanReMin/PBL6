@@ -29,7 +29,6 @@ class Video(Document):
     }
 
     def jsonify(self, current_user=None):
-        print(__file__, 'video id', self.id)
         return {
             'id': str(self.id),
             'user': self.user.fetch().jsonify(),

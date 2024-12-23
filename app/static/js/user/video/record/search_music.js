@@ -18,6 +18,7 @@ function displayResults(results) {
             }).then (async response => {
                 is_requesting = false;
                 music = response.data;
+                document.cookie = `music_id=${result.id}; path=/`;
                 sessionStorage.setItem('music_id', result.id);
                 await updateMusicDetails(music)
             })
