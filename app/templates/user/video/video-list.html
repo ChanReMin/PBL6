@@ -1,42 +1,51 @@
 {% extends "user/layout.html" %}
 {% block user_content %}
-    <link rel="stylesheet" href="/static/css/video-list.css">
-    <link href="/static/css/user/video/video-js.css" rel="stylesheet"/>
-    <h1>Danh sách video</h1>
-    {% if session['user']['id'] == user.id|string %}
-{#        <a class="btn btn-success" type="button" href="{{ url_for('user.video.add') }}">#}
-{#            Thêm#}
-{#        </a>#}
-        <a class="btn btn-success" type="button" href="/user/video/add">
+<link rel="stylesheet" href="/static/css/user/video/video-list.css">
+<div class="container mt-5">
+    <div class="header-container">
+        <div class="content-header">Video của bạn</div>
+        <button class="btn btn-success" type="button" onclick="window.location.href='{{ url_for('user.video.add') }}';">
             Thêm
-        </a>
-    {% endif %}
-    <div class="card-container">
-        {% for video in videos %}
-            <div class="card">
-                <div class="video-container">
-                    <video
-                            id="video{{ video.id }}"
-                            class="video-js"
-                            controls
-                            preload="auto"
-                            muted
-                            data-setup="{}"
-                            {#                            Style =“object-fit: contain;“#}
-                    >
-                        <source src="{{ video.video_url }}" type="video/mp4"/>
-                    </video>
-                    <h2 class="card-title">{{ video.title | safe }}</h2>
-                </div>
-                <div class="card-footer">
-                    Posted by: <strong>{{ video.user.fetch().username }}</strong>
-                </div>
-            </div>
-        {% endfor %}
+        </button>
     </div>
-    <script src="https://vjs.zencdn.net/7.11.4/video.min.js"></script>
-    <!-- Load the YouTube IFrame API script -->
-    <script src="https://www.youtube.com/iframe_api"></script>
-    <!-- Load your custom JavaScript file -->
-    <script src="/static/js/user/video/video_list.js"></script>
+    <div class="table-header-row">
+        <div></div>
+        <div class="header-title">Title</div>
+        <div>Edit</div>
+        <div>Public</div>
+    </div>
+    {% for video in videos %}
+    <div class="table-row" data-video-id="{{ video.id }}">
+        <div class="table-cell">
+            <img class="video-thumbnail" {% if video.thumbnail_url %}src="{{ video.thumbnail_url }}" {% endif %}>
+        </div>
+        <div class="row-title">
+            <span>{{ video.title}}</span>
+        </div>
+        <div class="table-cell">
+            <button
+                    data-bs-toggle="modal"
+                    data-bs-target="#video-edit-popup"
+                    class="TUX-button"
+                    type="button"
+                    data-id="{{ video.id }}"
+                    data-title="{{ video.title }}"
+                    data-thumbnail-url="{{ video.thumbnail_url }}"
+                    onclick="populateModal(this)">
+                Chỉnh sửa
+            </button>
+        </div>
+        <div class="table-cell">
+            <label class="switch">
+                <input type="checkbox" id="is-public-{{ video.id }}"
+                       data-video-id="{{ video.id }}"
+                       {% if video.public %}checked{% endif %} onclick="setPublic(this)">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% include "user/video/modal/video_edit_popup.html" %}
+<script src="/static/js/user/video/video_list.js"></script>
 {% endblock %}

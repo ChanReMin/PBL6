@@ -18,6 +18,7 @@ class Video(Document):
     music_end = IntField()
     public = BooleanField(default=True)
     comments = ListField(EmbeddedDocumentField('Comment'))
+    thumbnail_url = URLField()
 
     created_at = DateTimeField(default=datetime.now())
     updated_at = DateTimeField(default=datetime.now())
@@ -45,7 +46,8 @@ class Video(Document):
                 # comment.jsonify() for comment in self.comments
                 comment.jsonify(current_user=current_user) for comment in self.comments
             ],
-            'total_comments_count': getattr(self, 'total_comments_count', 0)
+            'total_comments_count': getattr(self, 'total_comments_count', 0),
+            'thumbnail_url': self.thumbnail_url,
         }
 
     @classmethod

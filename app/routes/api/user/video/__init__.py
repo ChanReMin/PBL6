@@ -70,88 +70,6 @@ def record_video():
     else:
         return jsonify({'error': 'Invalid file type or file missing'}), 400
 
-
-def generate_lyrics_overlay_filter(lyrics_data):
-    """
-    Generate FFmpeg filter string to overlay lyrics on the video at specific times.
-    """
-    filter_parts = []
-    for lyric in lyrics_data:
-        start_time = format_time(lyric['start_time'])
-        end_time = format_time(lyric['end_time'])
-        text = lyric['text']
-
-        # Encode the text in UTF-8 and decode in 'latin-1' to pass it to FFmpeg safely
-        safe_text = text.encode('utf-8').decode('latin-1')
-
-        # Create FFmpeg filter for each lyric line, with formatted time and properly encoded text
-        filter_parts.append(
-            f"drawtext=text='{safe_text}':enable='between(t,{start_time},{end_time})':fontcolor=white:fontsize=24:x=(w-text_w)/2:y=h-(2*lh)"
-        )
-    return ','.join(filter_parts)
-
-def format_time(timestamp):
-    """
-    Format time to ensure it is in the format HH:MM:SS.MMM (milliseconds).
-    """
-    parts = timestamp.split(":")
-    if len(parts) == 3:
-        seconds = parts[2]
-        if '.' not in seconds:
-            # Add .000 for milliseconds if not present
-            parts[2] += ".000"
-        return ":".join(parts)
-    return timestamp
-
-
-@api_user_video_bp.route('/music_search', methods=['GET'])
-def search_music():
-    query = request.args.get('q', '').strip().lower()
-
-    if not query:
-        return jsonify({'music_options': []}), 200
-
-    try:
-        # Perform a case-insensitive search for music matching the query
-        music_results = Music.objects(name__icontains=query).only('id', 'name', 'artists', 'lyrics', 'music_url')
-
-        # If no results are found, return an empty list
-        if not music_results:
-            return jsonify({'music_options': []}), 200
-
-        music_data = []
-        for music in music_results:
-            # Resolve LazyReferenceField (artists) to actual objects
-            artists_resolved = [artist.fetch() for artist in music.artists]  # Fetch the actual artist objects
-
-            # Prepare the serialized artist data (e.g., id and name)
-            artists_data = [{'id': str(artist.id), 'name': artist.name} for artist in artists_resolved]
-
-            # Convert the lyrics to a serializable format (dictionary)
-            lyrics_data = [{
-                'order': lyric.order,
-                'text': lyric.text,
-                'start_time': lyric.start_time,
-                'end_time': lyric.end_time,
-                'artist_index': lyric.artist_index,
-                'vector': lyric.vector  # Ensure this is also serializable, or convert it as needed
-            } for lyric in music.lyrics]
-
-            # Prepare the final data for each music item, including lyrics
-            music_data.append({
-                'id': str(music.id),
-                'name': music.name,
-                'artists': artists_data,  # Add resolved artist data
-                'lyrics': lyrics_data,  # Add serialized lyrics data
-                'music_url': music.music_url  # Include the music URL
-            })
-
-        return jsonify({'music_options': music_data}), 200
-
-    except Exception as e:
-        # Catch any other error that occurs and return a 500 response
-        return jsonify({'error': str(e)}), 500
-
 @api_user_video_bp.route('/get', methods=['POST'])
 def get_video():
     data = request.get_json()
@@ -195,3 +113,45 @@ def unlike_video():
     if video_like_count == -1:
         return jsonify({'success': False})
     return jsonify({'success': True, 'like_count': video_like_count})
+
+@api_user_video_bp.route('/public', methods=['POST'])
+def set_public_video():
+    data = request.get_json()
+    video_id = data['video_id']
+    public_state = data['public_state']
+    Video.objects(id=video_id).update_one(set__public=public_state)
+    return jsonify({'success': True})
+
+@api_user_video_bp.route('/update', methods=['PUT'])
+def update_video():
+    data = request.form
+    thumbnail = request.files.get('thumbnail')
+    video_id = data['video_id']
+    video = Video.objects(id=video_id).first()
+
+    if data.get('title'):
+        video.title = data['title']
+    if thumbnail:
+        public_id = f"thumbnails_{video_id}"
+        try:
+            response = cloudinary.uploader.upload(
+                thumbnail,
+                resource_type="image",
+                public_id=public_id,
+                overwrite=True,
+                transformation=[
+                    {
+                        'width': 212,
+                        'height': 212,
+                        'crop': 'fill',
+                        'gravity': 'face',
+                        'quality': 'auto',
+                        'fetch_format': 'auto'
+                    }
+                ]
+            )
+            video.thumbnail_url = response['secure_url']
+        except Exception as e:
+            return jsonify({'Error': e})
+    video.save()
+    return jsonify({'Success': True})

@@ -1,0 +1,39 @@
+<div class="modal fade" id="video-edit-popup" tabindex="-1" aria-labelledby="videoEditLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="videoEditLabel">Chỉnh sửa tiêu đề video</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="update-video" onsubmit="updateVideo(event)" class="profile-edit-form">
+                    <div class="avatar-container">
+                        <div class="avatar-wrapper">
+                            <img src="" alt="Video thumbnail" id="video-thumbnail">
+                        </div>
+                        <label for="update-video-thumbnail" class="upload-icon">
+                            <input type="file" id="update-video-thumbnail" accept="image/*" style="display: none;">
+                            <i class="fa fa-pencil"></i>
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="video-title" class="form-label">Tiêu đề video</label>
+                        <input
+                                type="text"
+                                class="form-control"
+                                id="video-title"
+                                name="video-title"
+                                value="">
+                        <input type="hidden" id="video-id" name="video-id" value="">
+                    </div>
+                    <div class="form-footer d-flex justify-content-end">
+                        <button type="submit" class="btn btn-success text-white me-2">Lưu</button>
+                        <button type="button" class="btn btn-secondary text-white" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/user/video/video_update.js"></script>
+<script src="/static/dist/js/jquery.min.js"></script>
